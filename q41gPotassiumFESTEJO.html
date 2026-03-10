@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Movie List</title>
+
+<style>
+
+body {
+    background-color: rgb(9, 4, 60);
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    text-align: center;
+    padding: 50px;
+    color: darkgoldenrod;
+}
+
+h1 {
+    color: rgb(100, 100, 168);
+}
+
+input, select {
+    width: 300px;
+    padding: 10px;
+    font-size: 16px;
+    margin: 5px;
+}
+
+button, input[type="submit"], input[type="reset"] {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: rgb(9, 4, 60);
+    color: darkgoldenrod;
+    border: 2px solid darkgoldenrod;
+    cursor: pointer;
+}
+
+.movie {
+    background: white;
+    color: black;
+    width: 450px;
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* STAR STYLING */
+.star{
+    font-size:30px;
+    cursor:pointer;
+    color:gray;
+}
+
+.star.active{
+    color:gold;
+}
+
+</style>
+</head>
+
+<body>
+
+    <h1>Add a Movie</h1>
+
+    <form id="movieForm" onsubmit="return addMovie()">
+
+    <label>Title:</label>
+    <input type="text" name="title" required><br>
+
+    <label>Year:</label>
+    <input type="text" name="year" required><br>
+
+    <label>Genre:</label>
+    <select name="genre">
+    <option>Action</option>
+    <option>Adventure</option>
+    <option>Comedy</option>
+    <option>Drama</option>
+    <option>Horror</option>
+    <option>Sci-Fi</option>
+    </select><br><br>
+
+    <label>Rating:</label>
+    <span class="star" onclick="rate(1)">★</span>
+    <span class="star" onclick="rate(2)">★</span>
+    <span class="star" onclick="rate(3)">★</span>
+    <span class="star" onclick="rate(4)">★</span>
+    <span class="star" onclick="rate(5)">★</span>
+
+    <br><br>
+
+    <input type="submit" value="Add Movie">
+
+    </form>
+
+    <h1>Movie List</h1>
+
+    <div id="movieList"></div>
+
+    <script>
+
+
+    let rating = 0;
+
+    displayMovies();
+
+    function rate(value){
+
+        rating = value;
+
+        let stars = document.getElementsByClassName("star");
+
+        for (let i = 0; i < stars.length; i++) {
+
+            if (i < value){
+                stars[i].classList.add("active");
+            } else {
+                stars[i].classList.remove("active");
+            }
+        }
+    }
+
+    function addMovie() {
+
+        let title = document.forms["movieForm"]["title"].value;
+        let year = document.forms["movieForm"]["year"].value;
+        let genre = document.forms["movieForm"]["genre"].value;
+
+        let movie = {
+            title: title,
+            year: year,
+            genre: genre,
+            rating: rating
+        };
+
+        let movies = JSON.parse(localStorage.getItem("movies")) || [];
+        movies.push(movie);
+        localStorage.setItem("movies", JSON.stringify(movies));
+
+        displayMovies();
+
+        document.getElementById("movieForm").reset();
+        rating = 0;
+        let stars = document.getElementsByClassName("star");
+        for (let i = 0; i < stars.length; i++){
+            stars[i].classList.remove("active");
+        }
+
+        return false;
+    }
+
+    function displayMovies(){
+
+        let movies = JSON.parse(localStorage.getItem("movies")) || [];
+        let list = document.getElementById("movieList");
+        list.innerHTML = "";
+
+        for (let i = 0; i < movies.length; i++) {
+
+            let movie = movies[i];
+            let div = document.createElement("div");
+            div.className = "movie";
+            let stars = "★".repeat(movie.rating);
+            div.innerHTML =
+            movie.title + " (" + movie.year + ") - " + movie.genre +
+            ", Rating: " + stars;
+
+            list.appendChild(div);
+
+        }
+
+    }
+
+    </script>
+
+</body>
+</html>
